@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:listin_evolucao/_core/my_colors.dart';
 import 'package:listin_evolucao/authentication/screens/auth_screen.dart';
 import 'package:listin_evolucao/firestore/presentation/home_screen.dart';
+import 'package:listin_evolucao/storage/storage_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +43,8 @@ class MyApp extends StatelessWidget {
         ),
       ),
       //home: const HomeScreen(),
-      home: RoteadorTelas(),
+      //home: RoteadorTelas(),
+      home: StorageScreen(),
     );
   }
 }

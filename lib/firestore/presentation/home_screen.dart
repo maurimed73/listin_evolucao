@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             UserAccountsDrawerHeader(
               currentAccountPicture: const CircleAvatar(
+                
                 backgroundColor: Colors.white,
               ),
               accountName: Text(
