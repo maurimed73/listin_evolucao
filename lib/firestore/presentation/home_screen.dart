@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:listin_evolucao/authentication/component/show_senha_confirmacao.dart';
+import 'package:listin_evolucao/authentication/services/auth_service.dart';
+import 'package:listin_evolucao/firestore/listin_service/listin_service.dart';
 import 'package:listin_evolucao/firestore_produtos/presentation/produto_screen.dart';
 import 'package:uuid/uuid.dart';
 import '../models/listin.dart';
@@ -16,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // Listin(id: "L001", name: "Feira de Outubro"),
     // Listin(id: "L002", name: "Feira de Novembro"),
   ];
+  ListinService listinService = ListinService();
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   @override
@@ -27,6 +31,29 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          children: <Widget>[
+            ListTile(
+              leading: const Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
+              title: const Text('Remover Conta'),
+              onTap: () {
+                showSenhaConfimacaoDialog(context: context, email: '');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Sair'),
+              onTap: () {
+                AuthService().deslogar();
+              },
+            )
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: const Text("Listin - Feira Colaborativa"),
       ),
@@ -161,10 +188,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
 
                         // salvar no firestore
-                        firestore
-                            .collection('listins')
-                            .doc(listin.id)
-                            .set(listin.toMap());
+                        ListinService().adicionarListin(listin: listin);
+                        // firestore
+                        //     .collection('listins')
+                        //     .doc(listin.id)
+                        //     .set(listin.toMap());
 
                         // Atualizar a lista
                         refresh();
@@ -183,21 +211,21 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   refresh() async {
-    List<Listin> temp = [];
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await firestore.collection('listins').get();
+    List<Listin> temp = await ListinService().lerListins();
+    // QuerySnapshot<Map<String, dynamic>> snapshot =
+    //     await firestore.collection('listins').get();
 
-    for (var doc in snapshot.docs) {
-      temp.add(Listin.fromMap(doc.data()));
-    }
+    // for (var doc in snapshot.docs) {
+    //   temp.add(Listin.fromMap(doc.data()));
+    // }
 
     setState(() {
       listListins = temp;
     });
   }
 
-  void remove(Listin model) {
-    firestore.collection('listins').doc(model.id).delete();
+  void remove(Listin model) async {
+    await listinService.removerListin(listinId: model.id);
     refresh();
   }
 }
